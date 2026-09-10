@@ -18,17 +18,17 @@ const STATUS_META: Record<
     bgClass: "bg-verified-bg",
     dotClass: "bg-verified",
   },
-  needs_verification: {
-    label: "NEEDS VERIFICATION",
-    textClass: "text-pending",
-    bgClass: "bg-pending-bg",
-    dotClass: "bg-pending",
-  },
-  not_found: {
-    label: "NOT FOUND",
+  potential_issue: {
+    label: "POTENTIAL ISSUE",
     textClass: "text-flagged",
     bgClass: "bg-flagged-bg",
     dotClass: "bg-flagged",
+  },
+  manual_verification: {
+    label: "MANUAL VERIFICATION",
+    textClass: "text-pending",
+    bgClass: "bg-pending-bg",
+    dotClass: "bg-pending",
   },
 };
 
@@ -85,7 +85,7 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
       acc[c.status] += 1;
       return acc;
     },
-    { detected: 0, needs_verification: 0, not_found: 0 } as Record<
+    { detected: 0, potential_issue: 0, manual_verification: 0 } as Record<
       CheckStatus,
       number
     >
@@ -114,10 +114,12 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
 
       <div className="mb-4 flex gap-4 font-mono text-micro">
         <span className="text-verified">{counts.detected} DETECTED</span>
-        <span className="text-pending">
-          {counts.needs_verification} TO VERIFY
+        <span className="text-flagged">
+          {counts.potential_issue} POTENTIAL ISSUE
         </span>
-        <span className="text-flagged">{counts.not_found} NOT FOUND</span>
+        <span className="text-pending">
+          {counts.manual_verification} TO VERIFY
+        </span>
       </div>
 
       <section className="mb-10 border border-rule bg-white/40 p-5">
@@ -160,8 +162,9 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
         </div>
         <p className="mt-3 font-mono text-micro text-ink-faint">
           Not a pass/fail verdict — each line reflects what was legible on
-          the scanned face. Items marked NOT FOUND may still be present
-          elsewhere on the pack.
+          the scanned face. Items marked POTENTIAL ISSUE may still be present
+          elsewhere on the pack; DETECTED means a declaration was found, not
+          that it has been confirmed legally compliant.
         </p>
       </section>
     </div>

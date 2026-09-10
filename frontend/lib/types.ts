@@ -1,4 +1,4 @@
-export type CheckStatus = "detected" | "needs_verification" | "not_found";
+export type CheckStatus = "detected" | "potential_issue" | "manual_verification";
 
 export interface ComplianceCheck {
   id: string;
