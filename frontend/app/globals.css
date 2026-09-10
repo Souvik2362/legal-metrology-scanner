@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: #eef1ec;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    #d9dfd8 27px,
+    #d9dfd8 28px
+  );
+  color: #141a1d;
+}
+
+* {
+  border-color: #b7c1ba;
+}
+
+::selection {
+  background-color: #1d3557;
+  color: #eef1ec;
+}
+
+/* Ruler tick-mark divider. Use as <div class="tick-row" /> */
+.tick-row {
+  height: 8px;
+  background-image: repeating-linear-gradient(
+    to right,
+    #8a938e 0,
+    #8a938e 1px,
+    transparent 1px,
+    transparent 8px
+  );
+  background-position: bottom;
+  background-size: 100% 8px;
+  background-repeat: repeat-x;
+  opacity: 0.6;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #1d3557;
+  outline-offset: 2px;
+}
