@@ -42,7 +42,8 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
         <li className={preview ? "text-ink-faint" : "text-gauge"}>
           01 UPLOAD
         </li>
-        <li>02 ANALYZE</li>
+        <li>02 EXTRACT</li>
+        <li>03 ASSESS</li>
       </ol>
 
       <div
@@ -78,9 +79,14 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
               alt="Selected label preview"
               className="max-h-56 w-auto border border-rule object-contain"
             />
-            <p className="font-mono text-micro text-ink-faint">
-              PREVIEW LOADED — TAP TO REPLACE
-            </p>
+            <div className="text-center">
+              <p className="font-mono text-micro text-gauge">
+                ✓ IMAGE READY FOR SCAN
+              </p>
+              <p className="mt-1 font-mono text-micro text-ink-faint">
+                TAP IMAGE TO REPLACE
+              </p>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-3 px-6 text-center">
@@ -105,11 +111,24 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
                 />
               </svg>
             </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                inputRef.current?.click();
+              }}
+              className="border border-ink bg-paper px-4 py-2 font-mono text-micro text-ink transition-colors hover:bg-white"
+            >
+              SELECT IMAGE
+            </button>
             <p className="text-sm text-ink">
               Drag a photo here, or click to browse
             </p>
             <p className="font-mono text-micro text-ink-faint">
               JPG / PNG — LEGIBLE, EVENLY LIT
+            </p>
+            <p className="mt-1 font-mono text-micro text-ink-faint">
+              FULL LABEL VISIBLE · AVOID GLARE · KEEP TEXT IN FOCUS
             </p>
           </div>
         )}
@@ -117,14 +136,17 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
 
       <div className="mt-6 flex items-center justify-between">
         <p className="font-mono text-micro text-ink-faint">
-          NO IMAGE LEAVES THIS DEVICE UNTIL YOU CONTINUE
+          {preview
+            ? "IMAGE READY — START SCAN TO CONTINUE"
+            : "SELECT AN IMAGE TO CONTINUE"}
         </p>
+          
         <button
           disabled={!preview}
           onClick={() => preview && onImageSelected(preview)}
           className="border border-ink bg-gauge px-5 py-2.5 text-sm font-medium text-paper transition-opacity disabled:cursor-not-allowed disabled:border-rule disabled:bg-rule disabled:text-ink-faint disabled:opacity-100"
         >
-          Run compliance scan
+          {preview ? "RUN COMPLIANCE SCAN" : "SELECT IMAGE FIRST"}
         </button>
       </div>
     </div>

@@ -35,7 +35,7 @@ const STATUS_META: Record<
 function CheckRow({ check }: { check: ScanResult["checks"][number] }) {
   const [open, setOpen] = useState(false);
   const meta = STATUS_META[check.status];
-  const expandable = check.status !== "detected";
+  const expandable = true;
 
   return (
     <div className="border-b border-rule last:border-b-0">
@@ -56,23 +56,23 @@ function CheckRow({ check }: { check: ScanResult["checks"][number] }) {
         >
           {meta.label}
         </span>
-        {expandable && (
-          <span
-            className={`shrink-0 font-mono text-ink-faint transition-transform ${
-              open ? "rotate-90" : ""
-            }`}
-          >
-            ›
-          </span>
-        )}
+        <span
+          className={`shrink-0 font-mono text-ink-faint transition-transform ${
+            open ? "rotate-90" : ""
+          }`}
+        >
+          ›
+        </span>
       </button>
 
       {expandable && open && (
         <div className="mb-4 ml-[22px] border-l border-rule pl-4 pb-1">
           <p className="text-sm text-ink-soft">{check.reason}</p>
-          <p className="mt-2 font-mono text-micro text-ink-faint">
-            REF · {check.ruleRef}
-          </p>
+
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-micro text-ink-faint">
+            <span>READING · {check.reading ?? "—"}</span>
+            <span>REF · {check.ruleRef}</span>
+          </div>
         </div>
       )}
     </div>
@@ -112,14 +112,31 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
         </button>
       </div>
 
-      <div className="mb-4 flex gap-4 font-mono text-micro">
-        <span className="text-verified">{counts.detected} DETECTED</span>
-        <span className="text-flagged">
-          {counts.potential_issue} POTENTIAL ISSUE
-        </span>
-        <span className="text-pending">
-          {counts.manual_verification} TO VERIFY
-        </span>
+      <div className="mb-6 grid grid-cols-3 border-y border-rule">
+        <div className="border-r border-rule px-4 py-4">
+          <p className="font-mono text-micro text-ink-faint">DETECTED</p>
+          <p className="mt-1 text-2xl text-verified">
+            {counts.detected}
+          </p>
+        </div>
+
+        <div className="border-r border-rule px-4 py-4">
+          <p className="font-mono text-micro text-ink-faint">
+            POTENTIAL ISSUE
+          </p>
+          <p className="mt-1 text-2xl text-flagged">
+            {counts.potential_issue}
+          </p>
+        </div>
+
+        <div className="px-4 py-4">
+          <p className="font-mono text-micro text-ink-faint">
+            TO VERIFY
+          </p>
+          <p className="mt-1 text-2xl text-pending">
+            {counts.manual_verification}
+          </p>
+        </div>
       </div>
 
       <section className="mb-10 border border-rule bg-white/40 p-5">
@@ -160,12 +177,26 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
             <CheckRow key={check.id} check={check} />
           ))}
         </div>
-        <p className="mt-3 font-mono text-micro text-ink-faint">
-          Not a pass/fail verdict — each line reflects what was legible on
-          the scanned face. Items marked POTENTIAL ISSUE may still be present
-          elsewhere on the pack; DETECTED means a declaration was found, not
-          that it has been confirmed legally compliant.
-        </p>
+        <div className="mt-4 border-l-2 border-pending bg-pending-bg/30 px-4 py-3">
+          <p className="font-mono text-micro text-pending">
+            PRELIMINARY COMPLIANCE ASSESSMENT
+          </p>
+
+          <p className="mt-1 text-xs leading-5 text-ink-soft">
+            This scan is a decision-support tool, not a legal certification.
+            DETECTED means the declaration was found on the scanned face.
+            POTENTIAL ISSUE and MANUAL VERIFICATION items require human review
+            and may require checking other areas of the package.
+          </p>
+        </div>
+        <div className="mt-8 flex justify-end border-t border-rule pt-5">
+          <button
+            onClick={onReset}
+            className="border border-ink bg-gauge px-5 py-2.5 text-sm font-medium text-paper hover:opacity-90"
+          >
+            SCAN ANOTHER PRODUCT
+          </button>
+        </div>
       </section>
     </div>
   );

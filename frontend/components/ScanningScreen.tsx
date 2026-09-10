@@ -7,8 +7,9 @@ interface ScanningScreenProps {
 }
 
 const STATUS_LINES = [
-  "Reading packaging geometry",
-  "Extracting printed declarations",
+  "Analyzing product image",
+  "Extracting text with OCR",
+  "Identifying product declarations",
   "Cross-checking against LM(PC) Rules 2011",
 ];
 
@@ -18,7 +19,7 @@ export default function ScanningScreen({ imageUrl }: ScanningScreenProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveLine((prev) => Math.min(prev + 1, STATUS_LINES.length - 1));
-    }, 850);
+    }, 700);
     return () => clearInterval(interval);
   }, []);
 
