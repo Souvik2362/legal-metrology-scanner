@@ -41,18 +41,31 @@ function CheckRow({ check }: { check: ScanResult["checks"][number] }) {
     <div className="border-b border-rule last:border-b-0">
       <button
         onClick={() => expandable && setOpen((o) => !o)}
-        className={`flex w-full items-center gap-4 py-3 text-left ${
+        className={`flex w-full items-center gap-2 py-3 text-left sm:gap-4 ${
           expandable ? "cursor-pointer" : "cursor-default"
         }`}
         aria-expanded={expandable ? open : undefined}
       >
         <span className={`inline-block h-1.5 w-1.5 shrink-0 ${meta.dotClass}`} />
-        <span className="w-40 shrink-0 text-sm text-ink">{check.label}</span>
-        <span className="flex-1 truncate font-mono text-sm text-ink-soft">
-          {check.reading ?? "—"}
-        </span>
+        <div className="w-32 shrink-0 sm:w-40">
+          <span className="block text-sm text-ink">{check.label}</span>
+          <span className="mt-0.5 block font-mono text-micro text-ink-faint">
+            {check.ruleRef}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <span className="block truncate font-mono text-sm text-ink-soft">
+            {check.reading ?? "—"}
+          </span>
+
+          {check.status !== "detected" && (
+            <span className="mt-1 block font-mono text-micro text-ink-faint">
+              REVIEW REQUIRED
+            </span>
+          )}
+        </div>
         <span
-          className={`shrink-0 px-2 py-0.5 font-mono text-micro ${meta.textClass} ${meta.bgClass}`}
+          className={`shrink-0 px-1.5 py-0.5 font-mono text-micro sm:px-2 ${meta.textClass} ${meta.bgClass}`}
         >
           {meta.label}
         </span>
@@ -67,7 +80,14 @@ function CheckRow({ check }: { check: ScanResult["checks"][number] }) {
 
       {expandable && open && (
         <div className="mb-4 ml-[22px] border-l border-rule pl-4 pb-1">
-          <p className="text-sm text-ink-soft">{check.reason}</p>
+          <p className="text-sm leading-6 text-ink-soft">
+            {check.reason ??
+              (check.status === "detected"
+                ? "Declaration detected on the scanned label. Review the applicable rule reference and verify correctness, placement, and legibility where required."
+                : check.status === "manual_verification"
+                ? "Declaration requires manual verification against the package and applicable rule requirements."
+                : "Potential non-compliance detected. Review the declaration and applicable rule requirements.")}
+          </p>
 
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 font-mono text-micro text-ink-faint">
             <span>READING · {check.reading ?? "—"}</span>
@@ -95,10 +115,12 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
     <div>
       <div className="mb-6 flex items-start justify-between border-b border-rule pb-6">
         <div>
-          <div className="mb-1 flex items-center gap-2 font-mono text-micro text-ink-faint">
-            <span>{result.scanId}</span>
+          <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-micro text-ink-faint">
+            <span>SCAN · {result.scanId}</span>
             <span>·</span>
-            <span>{new Date(result.scannedAt).toLocaleString()}</span>
+            <span>
+              ASSESSED · {new Date(result.scannedAt).toLocaleString()}
+            </span>
           </div>
           <h1 className="text-xl font-medium text-ink">
             {result.product.brand} — {result.product.name}
@@ -110,6 +132,61 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
         >
           NEW SCAN
         </button>
+      </div>
+
+      <div className="mb-5 flex items-center justify-between border-b border-rule pb-3">
+        <span className="font-mono text-micro text-ink-faint">
+          ASSESSMENT STATUS
+        </span>
+
+        <span className="font-mono text-micro text-verified">
+          ✓ COMPLETE · {result.checks.length} CHECKS
+        </span>
+      </div>
+
+      <section className="mb-6 grid gap-6 border border-rule bg-white/40 p-5 sm:grid-cols-[220px_1fr]">
+        <div className="border border-rule bg-paper p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={result.imageUrl}
+            alt="Scanned product label"
+            className="h-full max-h-64 w-full object-contain"
+          />
+        </div>
+
+        <div className="flex flex-col justify-center">
+          <p className="font-mono text-micro text-ink-faint">
+            SCANNED LABEL
+          </p>
+
+          <h2 className="mt-2 text-base font-medium text-ink">
+            Visual reference
+          </h2>
+
+          <p className="mt-2 max-w-md text-sm leading-6 text-ink-soft">
+            Results below are based on declarations detected from the
+            scanned product face. Expand individual checks to review
+            the detected reading and applicable rule reference.
+          </p>
+        </div>
+      </section>
+
+      <div className="mb-4 border-l-2 border-gauge bg-white/40 px-4 py-3">
+        <p className="font-mono text-micro text-gauge">
+          ASSESSMENT SUMMARY
+        </p>
+
+       <p className="mt-1 text-sm leading-6 text-ink-soft">
+          {counts.potential_issue > 0
+            ? `${counts.potential_issue} potential issue${
+                counts.potential_issue > 1 ? "s" : ""
+              } detected. Review flagged declarations before making a compliance decision.`
+            : counts.manual_verification > 0
+            ? `${counts.manual_verification} item${
+                counts.manual_verification > 1 ? "s" : ""
+              } require manual verification.`
+            : "All scanned declarations were detected without a potential issue."}
+        </p>
       </div>
 
       <div className="mb-6 grid grid-cols-3 border-y border-rule">
@@ -138,34 +215,7 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
           </p>
         </div>
       </div>
-
-      <section className="mb-10 border border-rule bg-white/40 p-5">
-        <h2 className="mb-4 text-sm font-medium text-ink">
-          Printed declarations
-        </h2>
-        <dl className="grid grid-cols-2 gap-x-6 gap-y-3 font-mono text-sm tabular sm:grid-cols-3">
-          <div>
-            <dt className="text-micro text-ink-faint">NET QUANTITY</dt>
-            <dd className="text-ink">{result.product.netQuantity}</dd>
-          </div>
-          <div>
-            <dt className="text-micro text-ink-faint">MRP</dt>
-            <dd className="text-ink">{result.product.mrp}</dd>
-          </div>
-          <div>
-            <dt className="text-micro text-ink-faint">BATCH NO.</dt>
-            <dd className="text-ink">{result.product.batchNumber}</dd>
-          </div>
-          <div>
-            <dt className="text-micro text-ink-faint">MFG DATE</dt>
-            <dd className="text-ink">{result.product.mfgDate}</dd>
-          </div>
-          <div className="col-span-2 sm:col-span-3">
-            <dt className="text-micro text-ink-faint">PACKER ADDRESS</dt>
-            <dd className="text-ink">{result.product.packerAddress}</dd>
-          </div>
-        </dl>
-      </section>
+      
 
       <section>
         <h2 className="mb-2 text-sm font-medium text-ink">
