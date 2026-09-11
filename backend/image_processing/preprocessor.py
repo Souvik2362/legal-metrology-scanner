@@ -22,13 +22,13 @@ def decode_image_bytes(image_bytes: bytes) -> Optional[np.ndarray]:
         return None
 
 
-def resize_if_needed(image: np.ndarray, max_dim: int = 2000, min_dim: int = 600) -> np.ndarray:
+def resize_if_needed(image: np.ndarray, max_dim: int = 1400, min_dim: int = 600) -> np.ndarray:
     """Resize image to maintain resolution in optimal OCR range [min_dim, max_dim]."""
     h, w = image.shape[:2]
     max_side = max(h, w)
     min_side = min(h, w)
 
-    # Downscale if image is excessively large
+    # Downscale if image is excessively large to optimize CPU OCR latency
     if max_side > max_dim:
         scale = max_dim / float(max_side)
         new_w = int(w * scale)
@@ -53,7 +53,7 @@ def preprocess_for_ocr(
     """Preprocess image matrix to maximize OCR detection & recognition accuracy.
 
     Steps:
-    1. Dimension normalization / scaling
+    1. Dimension normalization / scaling (max_dim 1400 for rapid CPU inference)
     2. Grayscale conversion
     3. CLAHE contrast enhancement (Contrast Limited Adaptive Histogram Equalization)
     4. Bilateral filter noise reduction (preserves sharp text edges)
@@ -75,9 +75,9 @@ def preprocess_for_ocr(
         clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
         gray = clahe.apply(gray)
 
-    # 4. Noise Reduction preserving edges
+    # 4. Noise Reduction preserving edges (fast d=5)
     if use_denoise:
-        gray = cv2.bilateralFilter(gray, d=7, sigmaColor=50, sigmaSpace=50)
+        gray = cv2.bilateralFilter(gray, d=5, sigmaColor=40, sigmaSpace=40)
 
     return gray
 

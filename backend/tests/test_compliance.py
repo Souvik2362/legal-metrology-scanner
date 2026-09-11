@@ -36,21 +36,37 @@ class TestComplianceEngine(unittest.TestCase):
         self.assertEqual(check.status, CheckStatus.POTENTIAL_ISSUE)
         self.assertIn("was not detected", check.reason)
 
+    def test_evaluate_manufacturer_packer_with_role(self):
+        # When role is known ('manufacturer', 'packer', etc.), it should be DETECTED
+        packer_data = {"value": "Sunridge Agro Pvt. Ltd., Nashik", "role": "manufacturer"}
+        check = evaluate_declaration("manufacturer_packer", packer_data, avg_ocr_confidence=0.95)
+        self.assertEqual(check.status, CheckStatus.DETECTED)
+
+    def test_evaluate_manufacturer_packer_unclear_role(self):
+        # When role is unclear, it correctly triggers MANUAL_VERIFICATION
+        packer_data = {"value": "Sunridge Agro Pvt. Ltd., Nashik", "role": "unclear"}
+        check = evaluate_declaration("manufacturer_packer", packer_data, avg_ocr_confidence=0.95)
+        self.assertEqual(check.status, CheckStatus.MANUAL_VERIFICATION)
+
     def test_run_compliance_assessment_full(self):
         sample_extracted = {
             "mrp": {"value": "₹ 189.00 (incl. of all taxes)", "has_tax_clause": True},
             "net_quantity": {"value": "1 L"},
-            "manufacturer_packer": {"value": "Sunridge Agro Pvt. Ltd."},
+            "manufacturer_packer": {"value": "Sunridge Agro Pvt. Ltd.", "role": "manufacturer"},
             "batch_lot": {"value": "SR24B0417"},
             "mfg_date": {"value": "03/2026"},
             "best_before": {"value": "Best before 9 months"},
             "consumer_care": {"value": "Email: care@sunridge.com"},
+            "unit_sale_price": {"value": "₹ 18.90 / 100ml"},
+            "country_of_origin": {"value": "India"},
         }
         res = run_compliance_assessment(sample_extracted, avg_ocr_confidence=0.95, image_url="blob:sample")
         self.assertIsInstance(res, ScanResult)
-        self.assertEqual(len(res.checks), 7)
+        self.assertEqual(len(res.checks), 9)
         self.assertEqual(res.product.netQuantity, "1 L")
         self.assertEqual(res.product.mrp, "₹ 189.00 (incl. of all taxes)")
+        self.assertEqual(res.product.unitSalePrice, "₹ 18.90 / 100ml")
+        self.assertEqual(res.product.countryOfOrigin, "India")
 
 
 if __name__ == "__main__":

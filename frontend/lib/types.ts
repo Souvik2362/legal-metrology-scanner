@@ -22,6 +22,8 @@ export interface ProductInfo {
   packerAddress: string;
   customerCareText: string | null;
   bestBefore?: string | null;
+  unitSalePrice?: string | null;
+  countryOfOrigin?: string | null;
 }
 
 

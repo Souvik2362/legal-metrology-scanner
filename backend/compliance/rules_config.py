@@ -89,6 +89,27 @@ RULE_CONFIGS: Dict[str, Dict[str, Any]] = {
         ),
         "required": True,
     },
+    "unit_sale_price": {
+        "id": "unit_sale_price",
+        "label": "Unit Sale Price (USP)",
+        "rule_ref": "Rule 6(1)(e) — Legal Metrology (Packaged Commodities) Rules, 2011 (as amended Dec 2022)",
+        "parent_law": PARENT_LAW,
+        "description": (
+            "Unit sale price in terms of price per g/ml or per 100g/100ml must be declared "
+            "on packages containing net quantity of more than 1g or 1ml."
+        ),
+        "required": True,
+    },
+    "country_of_origin": {
+        "id": "country_of_origin",
+        "label": "Country of Origin declaration",
+        "rule_ref": "Rule 6(1)(n) — Legal Metrology (Packaged Commodities) Rules, 2011",
+        "parent_law": PARENT_LAW,
+        "description": (
+            "The name of the country of origin or manufacture must be clearly mentioned on every package."
+        ),
+        "required": True,
+    },
 }
 
 

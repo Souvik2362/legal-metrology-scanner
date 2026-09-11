@@ -1,20 +1,34 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UploadScreenProps {
   onImageSelected: (url: string) => void;
+  onLoadDemo?: (sample: "cookme" | "sunridge") => void;
 }
 
-export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
+export default function UploadScreen({ onImageSelected, onLoadDemo }: UploadScreenProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const prevUrlRef = useRef<string | null>(null);
 
   const loadFile = useCallback((file: File | undefined) => {
     if (!file || !file.type.startsWith("image/")) return;
+    if (prevUrlRef.current) {
+      URL.revokeObjectURL(prevUrlRef.current);
+    }
     const url = URL.createObjectURL(file);
+    prevUrlRef.current = url;
     setPreview(url);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (prevUrlRef.current) {
+        URL.revokeObjectURL(prevUrlRef.current);
+      }
+    };
   }, []);
 
   const handleDrop = useCallback(
@@ -42,7 +56,7 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
         <li className={preview ? "text-ink-faint" : "text-gauge"}>
           01 UPLOAD
         </li>
-        <li>02 EXTRACT</li>
+        <li>02 EXTRACT (9 RULES)</li>
         <li>03 ASSESS</li>
       </ol>
 
@@ -125,7 +139,7 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
               Drag a photo here, or click to browse
             </p>
             <p className="font-mono text-micro text-ink-faint">
-              JPG / PNG — LEGIBLE, EVENLY LIT
+              JPG / PNG / WEBP — LEGIBLE, EVENLY LIT
             </p>
             <p className="mt-1 font-mono text-micro text-ink-faint">
               FULL LABEL VISIBLE · AVOID GLARE · KEEP TEXT IN FOCUS
@@ -134,21 +148,43 @@ export default function UploadScreen({ onImageSelected }: UploadScreenProps) {
         )}
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <p className="font-mono text-micro text-ink-faint">
           {preview
             ? "IMAGE READY — START SCAN TO CONTINUE"
             : "SELECT AN IMAGE TO CONTINUE"}
         </p>
-          
+
         <button
           disabled={!preview}
           onClick={() => preview && onImageSelected(preview)}
-          className="border border-ink bg-gauge px-5 py-2.5 text-sm font-medium text-paper transition-opacity disabled:cursor-not-allowed disabled:border-rule disabled:bg-rule disabled:text-ink-faint disabled:opacity-100"
+          className="w-full sm:w-auto border border-ink bg-gauge px-5 py-2.5 text-sm font-medium text-paper transition-opacity disabled:cursor-not-allowed disabled:border-rule disabled:bg-rule disabled:text-ink-faint disabled:opacity-100 hover:bg-gauge-dim"
         >
           {preview ? "RUN COMPLIANCE SCAN" : "SELECT IMAGE FIRST"}
         </button>
       </div>
+
+      {onLoadDemo && (
+        <div className="mt-8 border-t border-rule pt-6">
+          <p className="font-mono text-micro text-ink-faint mb-3">
+            ACADEMIC / JUDGING DEMO PRESETS:
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => onLoadDemo("cookme")}
+              className="border border-rule bg-white/70 px-3 py-1.5 font-mono text-micro text-ink hover:border-ink"
+            >
+              SAMPLE: COOKME CUMIN SPICE (6g)
+            </button>
+            <button
+              onClick={() => onLoadDemo("sunridge")}
+              className="border border-rule bg-white/70 px-3 py-1.5 font-mono text-micro text-ink hover:border-ink"
+            >
+              SAMPLE: SUNRIDGE SUNFLOWER OIL (1L)
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

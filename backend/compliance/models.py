@@ -50,6 +50,8 @@ class ProductInfo(BaseModel):
     packerAddress: str = Field(default="Not detected")
     customerCareText: Optional[str] = None
     bestBefore: Optional[str] = None
+    unitSalePrice: Optional[str] = None
+    countryOfOrigin: Optional[str] = None
 
 
 class ScanResult(BaseModel):

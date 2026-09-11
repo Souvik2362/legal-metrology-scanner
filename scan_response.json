@@ -1,0 +1,74 @@
+{
+  "scanId": "SCN-578066",
+  "imageUrl": "product_01.JPG",
+  "scannedAt": "2026-09-11T01:55:00.806327+00:00",
+  "product": {
+    "name": "Whole Cumin",
+    "brand": "Cookme",
+    "netQuantity": "Not detected",
+    "mrp": "₹ 7 (incl. of all taxes)",
+    "batchNumber": "No",
+    "mfgDate": "Not detected",
+    "packerAddress": "Krishna Chandra Dutta (Spice) Private Limited",
+    "customerCareText": "For Feedback / Complaint:, Email: consumercare@cookme.in, Ph: 033 2259 9247",
+    "bestBefore": "Use By\nPlease write to Consumer Care Executive at"
+  },
+  "checks": [
+    {
+      "id": "mrp",
+      "label": "MRP / Retail Sale Price declaration",
+      "status": "detected",
+      "reading": "₹ 7 (incl. of all taxes)",
+      "ruleRef": "Rule 6(1)(e) — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": null
+    },
+    {
+      "id": "net_quantity",
+      "label": "Net Quantity declaration",
+      "status": "potential_issue",
+      "reading": null,
+      "ruleRef": "Rule 6(1)(c) + Rule 11 + Rule 12 — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": "The net quantity declaration was not detected on the scanned package face. Verify other packaging panels before concluding non-compliance."
+    },
+    {
+      "id": "manufacturer_packer",
+      "label": "Manufacturer / Packer / Importer details",
+      "status": "manual_verification",
+      "reading": "Krishna Chandra Dutta (Spice) Private Limited",
+      "ruleRef": "Rule 6(1)(a) — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": "Name and address detected, but OCR could not verify whether the entity is manufacturer, packer, or importer. Check label wording."
+    },
+    {
+      "id": "batch_lot",
+      "label": "Batch / Lot number",
+      "status": "detected",
+      "reading": "No",
+      "ruleRef": "Rule 6(1)(b) — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": null
+    },
+    {
+      "id": "mfg_date",
+      "label": "Date of manufacture / packaging / import",
+      "status": "potential_issue",
+      "reading": null,
+      "ruleRef": "Rule 6(1)(d) — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": "The date of manufacture / packaging / import was not detected on the scanned package face. Verify other packaging panels before concluding non-compliance."
+    },
+    {
+      "id": "best_before",
+      "label": "Best Before / Use By / Expiry date",
+      "status": "detected",
+      "reading": "Use By\nPlease write to Consumer Care Executive at",
+      "ruleRef": "Rule 6(1)(da) — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": null
+    },
+    {
+      "id": "consumer_care",
+      "label": "Consumer Care details",
+      "status": "detected",
+      "reading": "For Feedback / Complaint:, Email: consumercare@cookme.in, Ph: 033 2259 9247",
+      "ruleRef": "Rule 6(1)(f) — Legal Metrology (Packaged Commodities) Rules, 2011",
+      "reason": null
+    }
+  ]
+}

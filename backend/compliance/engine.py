@@ -86,7 +86,8 @@ def evaluate_declaration(
 
     # Manufacturer / Packer Role Ambiguity check
     if check_id == "manufacturer_packer":
-        if "role" not in extracted_item or extracted_item.get("role") == "unclear":
+        role = extracted_item.get("role")
+        if not role or role == "unclear":
             return ComplianceCheck(
                 id=check_id,
                 label=label,
@@ -116,14 +117,14 @@ def run_compliance_assessment(
     image_url: str = "",
     raw_ocr_text: str = "",
 ) -> ScanResult:
-    """Run full compliance assessment across all 7 MVP declarations and build ScanResult."""
+    """Run full compliance assessment across all 9 Legal Metrology declarations and build ScanResult."""
 
     scan_id = f"SCN-{random.randint(100000, 999999)}"
     scanned_at = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
     checks: List[ComplianceCheck] = []
 
-    # Order of checks aligned with Legal Metrology priorities
+    # Order of checks aligned with Legal Metrology statutory priorities
     check_order = [
         "mrp",
         "net_quantity",
@@ -132,6 +133,8 @@ def run_compliance_assessment(
         "mfg_date",
         "best_before",
         "consumer_care",
+        "unit_sale_price",
+        "country_of_origin",
     ]
 
     for check_id in check_order:
@@ -147,11 +150,36 @@ def run_compliance_assessment(
     packer_val = extracted_declarations.get("manufacturer_packer", {}).get("value") if extracted_declarations.get("manufacturer_packer") else "Not detected"
     care_val = extracted_declarations.get("consumer_care", {}).get("value") if extracted_declarations.get("consumer_care") else None
     exp_val = extracted_declarations.get("best_before", {}).get("value") if extracted_declarations.get("best_before") else None
+    usp_val = extracted_declarations.get("unit_sale_price", {}).get("value") if extracted_declarations.get("unit_sale_price") else None
+    origin_val = extracted_declarations.get("country_of_origin", {}).get("value") if extracted_declarations.get("country_of_origin") else None
 
-    # Simple product name inference from raw text
-    lines = [l.strip() for l in raw_ocr_text.split("\n") if l.strip()]
-    product_name = lines[0] if lines else "Packaged Commodity"
-    brand_name = lines[1] if len(lines) > 1 else "Packaged Product"
+    # Intelligent product name and brand inference from raw OCR text
+    import re
+    brand_name = "Packaged Product"
+    product_name = "Packaged Commodity"
+
+    brand_match = re.search(r'"([^"]+)"\s*(?:House|Agro|Foods|Spices|Enterprises)', raw_ocr_text, re.I)
+    if not brand_match:
+        brand_match = re.search(r'\b(Cookme|Everest|MDH|Catch|Tata|Sunridge|Fortune|Amul|Aashirvaad|Britannia|Parle|Haldiram|Nestle)\b', raw_ocr_text, re.I)
+    if brand_match:
+        brand_name = brand_match.group(1).strip()
+    elif extracted_declarations.get("manufacturer_packer") and extracted_declarations["manufacturer_packer"].get("value"):
+        val = extracted_declarations["manufacturer_packer"]["value"]
+        first_word = val.split()[0] if val else ""
+        if len(first_word) > 2:
+            brand_name = first_word
+
+    # Search for commodity / ingredient name (ignore 'Product of India')
+    ing_match = re.search(r'(?:Ingredient(?:s)?|Commodity)[\s:\.]*([A-Za-z\s]+)', raw_ocr_text, re.I)
+    if ing_match:
+        product_name = ing_match.group(1).strip().split("\n")[0]
+    else:
+        candidates = [
+            l.strip() for l in raw_ocr_text.split("\n")
+            if l.strip() and not re.search(r'(?:Batch|MRP|Net|MFD|Pkg|Lic|Regd|Clean|Keep|Date|Product\s*of|Made\s*in|For\s*Feedback)', l, re.I)
+        ]
+        if candidates:
+            product_name = candidates[0][:40]
 
     product = ProductInfo(
         name=product_name,
@@ -163,6 +191,8 @@ def run_compliance_assessment(
         packerAddress=packer_val,
         customerCareText=care_val,
         bestBefore=exp_val,
+        unitSalePrice=usp_val,
+        countryOfOrigin=origin_val,
     )
 
     return ScanResult(

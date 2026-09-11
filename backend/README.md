@@ -94,5 +94,7 @@ All backend rules enforce:
   - `mfg_date`: Rule 6(1)(d)
   - `best_before`: Rule 6(1)(da)
   - `consumer_care`: Rule 6(1)(f)
+  - `unit_sale_price`: Rule 6(1)(e) (as amended Dec 2022)
+  - `country_of_origin`: Rule 6(1)(n)
 
 For detailed presentation guides and viva Q&A, refer to [`LEGAL_RULES_AND_ASSESSMENT_GUIDE.md`](LEGAL_RULES_AND_ASSESSMENT_GUIDE.md).

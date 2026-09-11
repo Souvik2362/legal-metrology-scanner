@@ -164,10 +164,34 @@ export default function ResultsScreen({ result, onReset }: ResultsScreenProps) {
           </h2>
 
           <p className="mt-2 max-w-md text-sm leading-6 text-ink-soft">
-            Results below are based on declarations detected from the
-            scanned product face. Expand individual checks to review
-            the detected reading and applicable rule reference.
+            Results below are based on statutory declarations detected from the
+            scanned product face across 9 Legal Metrology rules.
           </p>
+
+          <div className="mt-3 flex flex-wrap gap-2 font-mono text-micro">
+            <span className="border border-rule bg-white px-2 py-0.5 text-ink">
+              QTY: {result.product.netQuantity}
+            </span>
+            <span className="border border-rule bg-white px-2 py-0.5 text-ink">
+              MRP: {result.product.mrp}
+            </span>
+            <span className="border border-rule bg-white px-2 py-0.5 text-ink">
+              BATCH: {result.product.batchNumber}
+            </span>
+            <span className="border border-rule bg-white px-2 py-0.5 text-ink">
+              MFD: {result.product.mfgDate}
+            </span>
+            {result.product.unitSalePrice && (
+              <span className="border border-rule bg-white px-2 py-0.5 text-gauge">
+                USP: {result.product.unitSalePrice}
+              </span>
+            )}
+            {result.product.countryOfOrigin && (
+              <span className="border border-rule bg-white px-2 py-0.5 text-verified">
+                ORIGIN: {result.product.countryOfOrigin}
+              </span>
+            )}
+          </div>
         </div>
       </section>
 

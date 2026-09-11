@@ -2,6 +2,7 @@
 
 import os
 import sys
+import asyncio
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -69,12 +70,22 @@ async def scan_label(image: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to read image bytes: {str(e)}")
 
-    # 1. Run OCR Pipeline (OpenCV Preprocessing + PaddleOCR)
-    ocr_res = run_ocr_pipeline(image_bytes)
+    # 1. Run OCR Pipeline asynchronously in threadpool to prevent blocking event loop
+    ocr_res = await asyncio.to_thread(run_ocr_pipeline, image_bytes)
+    
+    if ocr_res.get("status") == "ocr_unavailable":
+        raise HTTPException(status_code=503, detail="OCR engine is currently initializing or unavailable.")
+
+    if ocr_res.get("status") == "error" and ocr_res.get("line_count", 0) == 0:
+        raise HTTPException(
+            status_code=422,
+            detail="No legible text detected on the uploaded image. Please ensure the label is in focus, evenly lit, and not blurred.",
+        )
+
     raw_text = ocr_res.get("raw_text", "")
     avg_confidence = ocr_res.get("avg_confidence", 0.85)
 
-    # 2. Extract 7 Mandatory Legal Metrology Fields
+    # 2. Extract Mandatory Legal Metrology Fields (9 statutory checks)
     extracted_declarations = extract_all_declarations(raw_text)
 
     # 3. Evaluate Preliminary Compliance Assessment

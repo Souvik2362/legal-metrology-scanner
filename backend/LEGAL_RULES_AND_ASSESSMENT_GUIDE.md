@@ -18,17 +18,19 @@
 
 ---
 
-## 2. Summary Table of the 7 Mandatory MVP Declarations
+## 2. Summary Table of the 9 Mandatory Declarations
 
 | # | Declaration Category | Statutory Reference under LM(PC) Rules, 2011 | What the Rule Mandates | Extractor Logic / Pattern Used |
 |---|---|---|---|---|
-| **1** | **MRP / Retail Sale Price** | **Rule 6(1)(e)** | Maximum Retail Price inclusive of all taxes declared in Indian Rupees (`₹` / `Rs.`). | Regex: `(MRP\|M.R.P.\|Max Retail Price)[\s:]*(₹\|Rs.?)?\s*([\d,]+\.?\d*)` + tax clause check (`incl. of all taxes`). |
-| **2** | **Net Quantity** | **Rule 6(1)(c) + Rule 11 + Rule 12** | Standard unit of weight, volume, or count (`g`, `kg`, `ml`, `L`, `N`). Standard unit symbols strictly mandated. | Regex: `(Net Qty\|Net Wt\|Net Vol)[\s:]*([\d\.]+\s*(g\|kg\|ml\|l\|n))` with unit normalization. |
-| **3** | **Manufacturer / Packer / Importer** | **Rule 6(1)(a)** | Complete name and postal address of manufacturer, packer, or importer. | Keyword matcher (`Mfg by`, `Packed by`, `Marketed by`) + pincode/address entity parser. |
-| **4** | **Batch / Lot Number** | **Rule 6(1)(b)** | Batch number, lot number, or code distinguishing the manufacturing lot. | Regex: `(Batch\|Lot\|B. No\|L. No)[\s:]*([A-Za-z0-9\-\/]+)`. |
+| **1** | **MRP / Retail Sale Price** | **Rule 6(1)(e)** | Maximum Retail Price inclusive of all taxes declared in Indian Rupees (`₹` / `Rs.`). | Proximity parser: `(MRP\|M.R.P.)` + currency amounts with boundary checks rejecting date stamps (`625.12.26`). |
+| **2** | **Net Quantity** | **Rule 6(1)(c) + Rule 11 + Rule 12** | Standard unit of weight, volume, or count (`g`, `kg`, `ml`, `L`, `N`). Standard unit symbols strictly mandated. | Regex: `(Net Qty\|Net Wt\|Net Vol)[\s:]*([\d\.]+\s*(g\|kg\|ml\|l\|n))` with unit normalization, isolating nutrition rows. |
+| **3** | **Manufacturer / Packer / Importer** | **Rule 6(1)(a)** | Complete name and postal address of manufacturer, packer, or importer. | Keyword matcher (`Mfg by`, `Packed by`, `Marketed by`) + legal entity role classifier. |
+| **4** | **Batch / Lot Number** | **Rule 6(1)(b)** | Batch number, lot number, or code distinguishing the manufacturing lot. | Prefix-safe regex: `(Batch No\|Lot No\|B. No)[\s:]*([A-Za-z0-9\-\/]+)`. |
 | **5** | **Date Declaration** | **Rule 6(1)(d)** | Month and Year of manufacture, packaging, or import (`MM/YYYY` or `Month YYYY`). | Regex: `(Mfg\|Pkd\|MFD\|DOM)[\s:]*(\d{2}[\/\.-]\d{4}\|\d{2}[\/\.-]\d{2}[\/\.-]\d{4})`. |
 | **6** | **Best Before / Use By** | **Rule 6(1)(da)** | Expiry date or 'Best Before' period declaration (where applicable for perishable/food items). | Regex: `(Best Before\|Use By\|Expiry\|Exp Date)[\s:]*([^\n\.,]+)`. |
 | **7** | **Consumer Care Details** | **Rule 6(1)(f)** | Name, address, telephone number, and email address for consumer complaints. | Pattern matcher for toll-free numbers (`1800...`), mobile numbers, and email patterns (`@`). |
+| **8** | **Unit Sale Price (USP)** | **Rule 6(1)(e) (amended Dec 2022)** | Mandatory declaration of price per unit (`₹ / g`, `₹ / ml`, `₹ / 100g`, `₹ / 100ml`). | Regex: `(U.S.P.\|USP\|Unit Sale Price)[\s:]*(₹\|Rs.?)?\s*([\d\.]+\s*\/\s*(g\|kg\|ml\|l\|100g\|100ml\|n))`. |
+| **9** | **Country of Origin** | **Rule 6(1)(n)** | Country of origin or manufacture declared on package (`Made in India`, `Product of India`). | Pattern matcher: `(Country of Origin\|Product of\|Made in)[\s:]*([A-Za-z\s]+)`. |
 
 ---
 

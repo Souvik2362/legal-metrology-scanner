@@ -1,0 +1,302 @@
+[
+  {
+    "filename": "product_01.JPG",
+    "elapsed_seconds": 71.41,
+    "ocr_status": "success",
+    "line_count": 48,
+    "confidence": 91.8,
+    "product": {
+      "brand": "Cookme",
+      "name": "Whole Cumin",
+      "net_quantity": "5 g",
+      "mrp": "\u20b9 5.00 (incl. of all taxes)",
+      "batch": "J8/32/027H",
+      "mfg_date": "25.04.26",
+      "best_before": "Use By: 25.12.26",
+      "usp": "\u20b9 0.83 / g",
+      "country_of_origin": "India",
+      "packer": "Krishna Chandra Dutta (Spice) Private Limited..."
+    },
+    "checks": [
+      {
+        "id": "mrp",
+        "label": "MRP / Retail Sale Price declaration",
+        "status": "detected",
+        "reading": "\u20b9 5.00 (incl. of all taxes)"
+      },
+      {
+        "id": "net_quantity",
+        "label": "Net Quantity declaration",
+        "status": "detected",
+        "reading": "5 g"
+      },
+      {
+        "id": "manufacturer_packer",
+        "label": "Manufacturer / Packer / Importer details",
+        "status": "detected",
+        "reading": "Krishna Chandra Dutta (Spice) Private Limited"
+      },
+      {
+        "id": "batch_lot",
+        "label": "Batch / Lot number",
+        "status": "detected",
+        "reading": "J8/32/027H"
+      },
+      {
+        "id": "mfg_date",
+        "label": "Date of manufacture / packaging / import",
+        "status": "detected",
+        "reading": "25.04.26"
+      },
+      {
+        "id": "best_before",
+        "label": "Best Before / Use By / Expiry date",
+        "status": "detected",
+        "reading": "Use By: 25.12.26"
+      },
+      {
+        "id": "consumer_care",
+        "label": "Consumer Care details",
+        "status": "detected",
+        "reading": "Consumer Care Executive at, Email: consumercare@cookme.in, Ph: 033 2259 9247"
+      },
+      {
+        "id": "unit_sale_price",
+        "label": "Unit Sale Price (USP)",
+        "status": "detected",
+        "reading": "\u20b9 0.83 / g"
+      },
+      {
+        "id": "country_of_origin",
+        "label": "Country of Origin declaration",
+        "status": "detected",
+        "reading": "India"
+      }
+    ]
+  },
+  {
+    "filename": "product_02.jpg",
+    "elapsed_seconds": 58.0,
+    "ocr_status": "success",
+    "line_count": 91,
+    "confidence": 97.5,
+    "product": {
+      "brand": "INGREDIENTS:",
+      "name": "Del Monte Foods Pvt",
+      "net_quantity": "1 kg",
+      "mrp": "Not detected",
+      "batch": "Not detected",
+      "mfg_date": "Not detected",
+      "best_before": null,
+      "usp": null,
+      "country_of_origin": null,
+      "packer": "INGREDIENTS:..."
+    },
+    "checks": [
+      {
+        "id": "mrp",
+        "label": "MRP / Retail Sale Price declaration",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "net_quantity",
+        "label": "Net Quantity declaration",
+        "status": "detected",
+        "reading": "1 kg"
+      },
+      {
+        "id": "manufacturer_packer",
+        "label": "Manufacturer / Packer / Importer details",
+        "status": "detected",
+        "reading": "INGREDIENTS:"
+      },
+      {
+        "id": "batch_lot",
+        "label": "Batch / Lot number",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "mfg_date",
+        "label": "Date of manufacture / packaging / import",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "best_before",
+        "label": "Best Before / Use By / Expiry date",
+        "status": "detected",
+        "reading": "Not required / Optional"
+      },
+      {
+        "id": "consumer_care",
+        "label": "Consumer Care details",
+        "status": "detected",
+        "reading": "feedback or complaints, please contact our, Email: feedback@delmontefoodsindia.in"
+      },
+      {
+        "id": "unit_sale_price",
+        "label": "Unit Sale Price (USP)",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "country_of_origin",
+        "label": "Country of Origin declaration",
+        "status": "potential_issue",
+        "reading": null
+      }
+    ]
+  },
+  {
+    "filename": "product_03.jpg",
+    "elapsed_seconds": 111.28,
+    "ocr_status": "success",
+    "line_count": 76,
+    "confidence": 95.6,
+    "product": {
+      "brand": "Duval",
+      "name": "Cardarmon",
+      "net_quantity": "1.6 g",
+      "mrp": "\u20b9 10.00 (incl. of all taxes)",
+      "batch": "Not detected",
+      "mfg_date": "Not detected",
+      "best_before": null,
+      "usp": null,
+      "country_of_origin": null,
+      "packer": "Duval Enterprises Pvt. Ltd.,..."
+    },
+    "checks": [
+      {
+        "id": "mrp",
+        "label": "MRP / Retail Sale Price declaration",
+        "status": "detected",
+        "reading": "\u20b9 10.00 (incl. of all taxes)"
+      },
+      {
+        "id": "net_quantity",
+        "label": "Net Quantity declaration",
+        "status": "detected",
+        "reading": "1.6 g"
+      },
+      {
+        "id": "manufacturer_packer",
+        "label": "Manufacturer / Packer / Importer details",
+        "status": "detected",
+        "reading": "Duval Enterprises Pvt. Ltd.,"
+      },
+      {
+        "id": "batch_lot",
+        "label": "Batch / Lot number",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "mfg_date",
+        "label": "Date of manufacture / packaging / import",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "best_before",
+        "label": "Best Before / Use By / Expiry date",
+        "status": "detected",
+        "reading": "Not required / Optional"
+      },
+      {
+        "id": "consumer_care",
+        "label": "Consumer Care details",
+        "status": "detected",
+        "reading": "Customer Care Officer,, Email: feedback@duvalent.com, Ph: 91-9819853372"
+      },
+      {
+        "id": "unit_sale_price",
+        "label": "Unit Sale Price (USP)",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "country_of_origin",
+        "label": "Country of Origin declaration",
+        "status": "potential_issue",
+        "reading": null
+      }
+    ]
+  },
+  {
+    "filename": "product_04.jpg",
+    "elapsed_seconds": 114.57,
+    "ocr_status": "success",
+    "line_count": 72,
+    "confidence": 87.1,
+    "product": {
+      "brand": "Packaged Product",
+      "name": "4IOT",
+      "net_quantity": "500 g",
+      "mrp": "Not detected",
+      "batch": "Not detected",
+      "mfg_date": "Not detected",
+      "best_before": null,
+      "usp": "\u20b9 0.12/g",
+      "country_of_origin": "INDIA",
+      "packer": "Not detected..."
+    },
+    "checks": [
+      {
+        "id": "mrp",
+        "label": "MRP / Retail Sale Price declaration",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "net_quantity",
+        "label": "Net Quantity declaration",
+        "status": "detected",
+        "reading": "500 g"
+      },
+      {
+        "id": "manufacturer_packer",
+        "label": "Manufacturer / Packer / Importer details",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "batch_lot",
+        "label": "Batch / Lot number",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "mfg_date",
+        "label": "Date of manufacture / packaging / import",
+        "status": "potential_issue",
+        "reading": null
+      },
+      {
+        "id": "best_before",
+        "label": "Best Before / Use By / Expiry date",
+        "status": "detected",
+        "reading": "Not required / Optional"
+      },
+      {
+        "id": "consumer_care",
+        "label": "Consumer Care details",
+        "status": "detected",
+        "reading": "FEEDBACK\nTOLL FREE: 1800-10-22-221, Email: LEVER.CARE@UNILEVER.COM"
+      },
+      {
+        "id": "unit_sale_price",
+        "label": "Unit Sale Price (USP)",
+        "status": "detected",
+        "reading": "\u20b9 0.12/g"
+      },
+      {
+        "id": "country_of_origin",
+        "label": "Country of Origin declaration",
+        "status": "detected",
+        "reading": "INDIA"
+      }
+    ]
+  }
+]
