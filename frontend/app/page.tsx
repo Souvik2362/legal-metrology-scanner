@@ -62,7 +62,7 @@ export default function Home() {
               METROLOGY&nbsp;SCAN
             </span>
             <span className="font-mono text-micro text-ink-faint">
-              SIH26034 · rev. 2.0
+              SIH26034
             </span>
           </div>
 

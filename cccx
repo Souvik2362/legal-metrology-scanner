@@ -1,0 +1,37 @@
+[35mREADME.md[m[36m:[m[32m93[m[36m:[m* Image p[1;31mrev[miew
+[35mRUNNING.md[m[36m:[m[32m128[m[36m:[m7. [1;31mRev[miew the extracted declarations and compliance assessments.
+Binary file [35mTest_Images/product_06.jpg[m matches
+Binary file [35mTest_Images/product_08.jpg[m matches
+Binary file [35mTest_Images/product_09.jpg[m matches
+Binary file [35mTest_Images/product_10.jpg[m matches
+Binary file [35mTest_Images/product_11.jpg[m matches
+Binary file [35mTest_Images/product_13.jpg[m matches
+Binary file [35mTest_Images/product_15.jpg[m matches
+Binary file [35mTest_Images/product_16.jpg[m matches
+Binary file [35mTest_Images/product_17.jpg[m matches
+[35mbackend/compliance/engine.py[m[36m:[m[32m66[m[36m:[m                "Manual [1;31mrev[miew recommended to verify legibility and completeness."
+[35mbackend/compliance/models.py[m[36m:[m[32m38[m[36m:[m        description="Non-judgmental explanation of status or [1;31mrev[miew advice."
+[35mbackend/extraction/extractors.py[m[36m:[m[32m230[m[36m:[m    to p[1;31mrev[ment false MANUAL_VERIFICATION classification in compliance engine.
+[35mbackend/main.py[m[36m:[m[32m73[m[36m:[m    # 1. Run OCR Pipeline asynchronously in threadpool to p[1;31mrev[ment blocking event loop
+[35mbackend/tests/test_extractors.py[m[36m:[m[32m59[m[36m:[m        # Regression test: P[1;31mrev[ment '625.12.26' date stamp from being matched as ₹625.12 price
+[35mfrontend/app/page.tsx[m[36m:[m[32m65[m[36m:[m              SIH26034 · [1;31mrev[m. 2.0
+[35mfrontend/app/page.tsx[m[36m:[m[32m71[m[36m:[m              onClick={() => setDemoMode((p[1;31mrev[m) => !p[1;31mrev[m)}
+[35mfrontend/components/ResultsScreen.tsx[m[36m:[m[32m63[m[36m:[m              [1;31mREV[mIEW REQUIRED
+[35mfrontend/components/ResultsScreen.tsx[m[36m:[m[32m86[m[36m:[m                ? "Declaration detected on the scanned label. [1;31mRev[miew the applicable rule reference and verify correctness, placement, and legibility where required."
+[35mfrontend/components/ResultsScreen.tsx[m[36m:[m[32m89[m[36m:[m                : "Potential non-compliance detected. [1;31mRev[miew the declaration and applicable rule requirements.")}
+[35mfrontend/components/ResultsScreen.tsx[m[36m:[m[32m207[m[36m:[m              } detected. [1;31mRev[miew flagged declarations before making a compliance decision.`
+[35mfrontend/components/ResultsScreen.tsx[m[36m:[m[32m262[m[36m:[m            POTENTIAL ISSUE and MANUAL VERIFICATION items require human [1;31mrev[miew
+[35mfrontend/components/ScanningScreen.tsx[m[36m:[m[32m21[m[36m:[m      setActiveLine((p[1;31mrev[m) => Math.min(p[1;31mrev[m + 1, STATUS_LINES.length - 1));
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m11[m[36m:[m  const [p[1;31mrev[miew, setP[1;31mrev[miew] = useState<string | null>(null);
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m22[m[36m:[m      setP[1;31mrev[miew(reader.result);
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m31[m[36m:[m      e.p[1;31mrev[mentDefault();
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m51[m[36m:[m        <li className={p[1;31mrev[miew ? "text-ink-faint" : "text-gauge"}>
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m60[m[36m:[m          e.p[1;31mrev[mentDefault();
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m83[m[36m:[m        {p[1;31mrev[miew ? (
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m87[m[36m:[m              src={p[1;31mrev[miew}
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m88[m[36m:[m              alt="Selected label p[1;31mrev[miew"
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m148[m[36m:[m          {p[1;31mrev[miew
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m154[m[36m:[m          disabled={!p[1;31mrev[miew}
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m155[m[36m:[m          onClick={() => p[1;31mrev[miew && onImageSelected(p[1;31mrev[miew)}
+[35mfrontend/components/UploadScreen.tsx[m[36m:[m[32m158[m[36m:[m          {p[1;31mrev[miew ? "RUN COMPLIANCE SCAN" : "SELECT IMAGE FIRST"}
+[35mfrontend/package-lock.json[m[36m:[m[32m150[m[36m:[m      "integrity": "sha512-8XFikMSxWleYNryWIjiCX+gU201YS+erTUidKdyOVYi5qUQo/gRxv/3N1oZFCgqpesN6FPeqGM72Zve+n[1;31mReV[mXQ==",
