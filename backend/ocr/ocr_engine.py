@@ -8,7 +8,23 @@ import os
 import re
 import cv2
 import numpy as np
+import time
+import yaml
 from typing import Dict, Any, List, Optional
+
+def enhance_for_ocr(image: np.ndarray) -> np.ndarray:
+    """Create a high-contrast version for faint/dot-matrix label text."""
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Improve local contrast
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(gray)
+
+    # Light sharpening
+    blurred = cv2.GaussianBlur(enhanced, (0, 0), 1.0)
+    sharpened = cv2.addWeighted(enhanced, 1.5, blurred, -0.5, 0)
+
+    return cv2.cvtColor(sharpened, cv2.COLOR_GRAY2BGR)
 
 try:
     from backend.image_processing.preprocessor import decode_image_bytes, preprocess_for_ocr
@@ -51,7 +67,24 @@ def get_ocr_instance():
     try:
         from paddlex import create_pipeline
         print("[OCR Engine] Initializing PaddleX OCR Pipeline on CPU...")
-        _PADDLE_PIPELINE = create_pipeline(pipeline="OCR", device="cpu")
+        ocr_config_path = os.path.join(
+            os.path.dirname(__file__),
+            "OCR.yaml",
+        )
+        
+        with open(ocr_config_path, "r", encoding="utf-8") as f:
+            ocr_config = yaml.safe_load(f)
+        
+        ocr_config["SubModules"]["TextDetection"]["model_name"] = "PP-OCRv6_small_det"
+        ocr_config["SubModules"]["TextRecognition"]["model_name"] = "PP-OCRv6_small_rec"
+        
+        ocr_config["use_doc_preprocessor"] = False
+        ocr_config["use_textline_orientation"] = False
+        
+        _PADDLE_PIPELINE = create_pipeline(
+            config=ocr_config,
+            device="cpu",
+        )
         _PADDLE_AVAILABLE = True
         print("[OCR Engine] PaddleX OCR Pipeline loaded successfully.")
         return _PADDLE_PIPELINE
@@ -111,7 +144,12 @@ def run_ocr_pipeline(image_bytes: bytes) -> Dict[str, Any]:
         nonlocal total_conf
         lines_found = 0
         try:
+            inference_start = time.perf_counter()
             preds = list(pipeline.predict(img_mat))
+            print(
+                f"[OCR Timing] {angle_label} pipeline.predict(): "
+                f"{time.perf_counter() - inference_start:.2f}s"
+            )
             if not preds or len(preds) == 0:
                 return 0
 
@@ -140,7 +178,9 @@ def run_ocr_pipeline(image_bytes: bytes) -> Dict[str, Any]:
         return lines_found
 
     # Run 0° upright scan first
+    ocr_start = time.perf_counter()
     upright_lines = _process_image_angle("0", preprocessed)
+    print(f"[OCR Timing] 0° scan: {time.perf_counter() - ocr_start:.2f}s")
     upright_conf = (total_conf / upright_lines) if upright_lines > 0 else 0.0
 
     # In flexible packaging (pouches/sachets), crimp seals and dot-matrix stamps are often printed inverted.
@@ -151,17 +191,29 @@ def run_ocr_pipeline(image_bytes: bytes) -> Dict[str, Any]:
 
     needs_seal_scan = not (has_date_in_0 and has_batch_in_0)
 
-    if upright_lines < 8 or upright_conf < 0.80 or needs_seal_scan:
+    # Retry with enhanced contrast only when important declarations are missing.
+    raw_0 = " ".join([l["text"] for l in combined_lines])
+    
+    needs_enhanced_retry = (
+        not re.search(r"(MRP|Maximum Retail Price|Retail Price)", raw_0, re.I)
+        or not re.search(r"(Net\s*(Qty|Quantity)|Net\s*Wt|Net\s*Weight)", raw_0, re.I)
+    )
+    
+    if needs_enhanced_retry:
+        print("[OCR Retry] Important declaration missing. Running enhanced-contrast OCR...")
+        enhanced = enhance_for_ocr(preprocessed)
+    
+        ocr_start = time.perf_counter()
+        _process_image_angle("enhanced", enhanced)
+        print(
+            f"[OCR Timing] enhanced scan: "
+            f"{time.perf_counter() - ocr_start:.2f}s"
+        )
+    
+    if upright_lines < 8:
+        ocr_start = time.perf_counter()
         _process_image_angle("180", cv2.rotate(preprocessed, cv2.ROTATE_180))
-
-    # Fallback to vertical rotations (90°, 270°) if horizontal orientations detected minimal text
-    if len(combined_lines) < 4:
-        vertical_rotations = [
-            ("90", cv2.rotate(preprocessed, cv2.ROTATE_90_CLOCKWISE)),
-            ("270", cv2.rotate(preprocessed, cv2.ROTATE_90_COUNTERCLOCKWISE)),
-        ]
-        for angle_label, img_mat in vertical_rotations:
-            _process_image_angle(angle_label, img_mat)
+        print(f"[OCR Timing] 180° scan: {time.perf_counter() - ocr_start:.2f}s")
 
     line_count = len(combined_lines)
     if line_count > 0:

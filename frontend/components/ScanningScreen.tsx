@@ -19,7 +19,7 @@ export default function ScanningScreen({ imageUrl }: ScanningScreenProps) {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveLine((prev) => Math.min(prev + 1, STATUS_LINES.length - 1));
-    }, 700);
+    }, 850);
     return () => clearInterval(interval);
   }, []);
 

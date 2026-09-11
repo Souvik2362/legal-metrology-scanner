@@ -22,7 +22,7 @@ def decode_image_bytes(image_bytes: bytes) -> Optional[np.ndarray]:
         return None
 
 
-def resize_if_needed(image: np.ndarray, max_dim: int = 1400, min_dim: int = 600) -> np.ndarray:
+def resize_if_needed(image: np.ndarray, max_dim: int = 1000, min_dim: int = 600) -> np.ndarray:
     """Resize image to maintain resolution in optimal OCR range [min_dim, max_dim]."""
     h, w = image.shape[:2]
     max_side = max(h, w)

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 interface UploadScreenProps {
   onImageSelected: (url: string) => void;
@@ -11,25 +11,20 @@ export default function UploadScreen({ onImageSelected, onLoadDemo }: UploadScre
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const prevUrlRef = useRef<string | null>(null);
 
   const loadFile = useCallback((file: File | undefined) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    if (prevUrlRef.current) {
-      URL.revokeObjectURL(prevUrlRef.current);
-    }
-    const url = URL.createObjectURL(file);
-    prevUrlRef.current = url;
-    setPreview(url);
-  }, []);
+  if (!file || !file.type.startsWith("image/")) return;
 
-  useEffect(() => {
-    return () => {
-      if (prevUrlRef.current) {
-        URL.revokeObjectURL(prevUrlRef.current);
-      }
-    };
-  }, []);
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    if (typeof reader.result === "string") {
+      setPreview(reader.result);
+    }
+  };
+
+  reader.readAsDataURL(file);
+}, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {

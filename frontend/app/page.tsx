@@ -15,18 +15,24 @@ export default function Home() {
   const [demoMode, setDemoMode] = useState<boolean>(false);
 
   const handleImageSelected = useCallback(async (url: string) => {
-    setImageUrl(url);
-    setErrorMessage(null);
-    setScreen("scanning");
-    try {
-      const scanResult = await scanProductLabel(url, demoMode);
-      setResult(scanResult);
-      setScreen("results");
-    } catch (err: any) {
-      setErrorMessage(err.message || "Failed to complete product compliance scan.");
-      setScreen("upload");
-    }
-  }, [demoMode]);
+  setImageUrl(url);
+  setErrorMessage(null);
+
+  // Start the API request immediately.
+  const scanPromise = scanProductLabel(url, demoMode);
+
+  // Then show the scanning screen.
+  setScreen("scanning");
+
+  try {
+    const scanResult = await scanPromise;
+    setResult(scanResult);
+    setScreen("results");
+  } catch (err: any) {
+    setErrorMessage(err.message || "Failed to complete product compliance scan.");
+    setScreen("upload");
+  }
+}, [demoMode]);
 
   const handleReset = useCallback(() => {
     setScreen("upload");

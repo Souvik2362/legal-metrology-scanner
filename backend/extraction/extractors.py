@@ -33,11 +33,11 @@ def extract_mrp(text: str) -> Optional[Dict[str, Any]]:
     # Strategy 1: Explicit MRP keyword followed within 40 chars by currency/price
     # Note: Lookahead rejects trailing unit prices like '/g' or date separators like '.26'
     for m in re.finditer(
-        r"(?:MRP|M\.R\.P\.?|Max\.?\s*Retail\s*Price|Sale\s*Price)[^\d\n\r]{0,35}?(?:₹|Rs\.?|:\s*)?\s*([\d,]+(?:\.\d{2})?)\b(?!\s*[\.\/-]\s*\d)(?!\s*\/\s*(?:g|kg|ml|l|unit|100g))",
+        r"(?:MRP|M\.R\.P\.?|Max\.?\s*Retail\s*Price|Sale\s*Price)[^\d\n\r]{0,35}?(?:₹|Rs\.?|:\s*)?\s*([\d,\s]+(?:\.\d{2})?)\b(?!\s*[\.\/-]\s*\d)(?!\s*\/\s*(?:g|kg|ml|l|unit|100g))",
         text,
         re.IGNORECASE,
     ):
-        candidate = m.group(1).replace(",", "")
+        candidate = m.group(1).replace(",", "").replace(" ", "")
         if not is_date_or_invalid(candidate, m.end(1), text):
             amount = candidate
             raw_match = m.group(0)
@@ -46,7 +46,7 @@ def extract_mrp(text: str) -> Optional[Dict[str, Any]]:
     # Strategy 2: Preceding price on line immediately before MRP: e.g. "Rs. 5.00 \n M.R.P. (Incl. of all taxes)"
     if not amount:
         preceding_mrp = re.search(
-            r"(?:₹|Rs\.?)\s*([\d,]+(?:\.\d{2})?)\b(?!\s*[\.\/-]\s*\d)(?!\s*\/\s*(?:g|kg|ml|l|unit|100g))[\s\S]{1,40}?(?:MRP|M\.R\.P\.?|Max\.?\s*Retail\s*Price)",
+            r"(?:₹|Rs\.?)\s*([\d,\s]+(?:\.\d{2})?)\b(?!\s*[\.\/-]\s*\d)(?!\s*\/\s*(?:g|kg|ml|l|unit|100g))[\s\S]{1,40}?(?:MRP|M\.R\.P\.?|Max\.?\s*Retail\s*Price)",
             text,
             re.IGNORECASE,
         )
@@ -63,7 +63,7 @@ def extract_mrp(text: str) -> Optional[Dict[str, Any]]:
             text,
             re.IGNORECASE,
         ):
-            candidate = m.group(1).replace(",", "")
+            candidate = m.group(1).replace(",", "").replace(" ", "")
             if not is_date_or_invalid(candidate, m.end(1), text):
                 amount = candidate
                 raw_match = m.group(0)
@@ -72,11 +72,11 @@ def extract_mrp(text: str) -> Optional[Dict[str, Any]]:
     # Strategy 4: Fallback any explicit currency notation not part of USP or date
     if not amount:
         for m in re.finditer(
-            r"(?:₹|Rs\.?)\s*([\d,]+(?:\.\d{2})?)\b(?!\s*[\.\/-]\s*\d)(?!\s*\/\s*(?:g|kg|ml|l|unit|100g))",
+            r"(?:₹|Rs\.?)\s*([\d,\s]+(?:\.\d{2})?)\b(?!\s*[\.\/-]\s*\d)(?!\s*\/\s*(?:g|kg|ml|l|unit|100g))",
             text,
             re.IGNORECASE,
         ):
-            candidate = m.group(1).replace(",", "")
+            candidate = m.group(1).replace(",", "").replace(" ", "")
             if not is_date_or_invalid(candidate, m.end(1), text):
                 amount = candidate
                 raw_match = m.group(0)
