@@ -1,29 +1,39 @@
 import { ScanResult } from "./types";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+
 /**
- * Mock stand-in for a POST to the real label-analysis backend.
- *
- * TO CONNECT THE REAL BACKEND:
- * Replace the body of this function with a fetch to the FastAPI endpoint,
- * e.g.
- *
- *   export async function getMockScanResult(imageFile: File): Promise<ScanResult> {
- *     const form = new FormData();
- *     form.append("image", imageFile);
- *     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/scan`, {
- *       method: "POST",
- *       body: form,
- *     });
- *     if (!res.ok) throw new Error("Scan failed");
- *     return res.json();
- *   }
- *
- * As long as the FastAPI response is shaped like ScanResult (lib/types.ts),
- * no other component needs to change.
+ * Scan product label image via backend FastAPI service.
+ * Falls back gracefully to updated mock data if backend server is unreachable.
  */
 export async function getMockScanResult(imageUrl: string): Promise<ScanResult> {
-  // Simulate network + inference latency.
-  await new Promise((resolve) => setTimeout(resolve, 2600));
+  try {
+    // 1. Fetch image blob if imageUrl is a blob: or data: URL
+    const imageRes = await fetch(imageUrl);
+    const blob = await imageRes.blob();
+
+    // 2. Prepare multipart form payload
+    const formData = new FormData();
+    formData.append("image", blob, "scanned_label.jpg");
+
+    // 3. Post to backend scan endpoint
+    const response = await fetch(`${API_BASE_URL}/scan`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      const data: ScanResult = await response.json();
+      // Ensure image URL points to the local object URL for preview rendering
+      data.imageUrl = imageUrl;
+      return data;
+    }
+  } catch (error) {
+    console.warn("Backend connection failed or offline. Falling back to rule-aligned mock result.", error);
+  }
+
+  // Simulated latency fallback
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   return {
     scanId: "SCN-" + Math.floor(100000 + Math.random() * 900000),
@@ -37,58 +47,67 @@ export async function getMockScanResult(imageUrl: string): Promise<ScanResult> {
       batchNumber: "SR24B0417",
       mfgDate: "03/2026",
       packerAddress: "Sunridge Agro Pvt. Ltd., MIDC Industrial Area, Nashik, Maharashtra 422010",
-      customerCareText: null,
+      customerCareText: "care@sunridge.com",
+      bestBefore: "Best before 9 months from mfg",
     },
     checks: [
       {
         id: "mrp",
-        label: "MRP declaration",
+        label: "MRP / Retail Sale Price declaration",
         status: "detected",
         reading: "₹189.00 (incl. of all taxes)",
-        ruleRef: "LM(PC) Rules 2011, r.6(1)(e)",
+        ruleRef: "Rule 6(1)(e) — Legal Metrology (Packaged Commodities) Rules, 2011",
         reason: null,
       },
       {
-        id: "net-qty",
-        label: "Net quantity",
+        id: "net_quantity",
+        label: "Net Quantity declaration",
         status: "detected",
         reading: "1 L",
-        ruleRef: "LM(PC) Rules 2011, r.6(1)(f)",
+        ruleRef: "Rule 6(1)(c) + Rule 11 + Rule 12 — Legal Metrology (Packaged Commodities) Rules, 2011",
         reason: null,
       },
       {
-        id: "manufacturer-packer",
-        label: "Manufacturer / packer / importer",
+        id: "manufacturer_packer",
+        label: "Manufacturer / Packer / Importer details",
         status: "manual_verification",
-        reading: "Sunridge Agro Pvt. Ltd. (role unclear)",
-        ruleRef: "LM(PC) Rules 2011, r.6(1)(a)",
+        reading: "Sunridge Agro Pvt. Ltd., Nashik 422010",
+        ruleRef: "Rule 6(1)(a) — Legal Metrology (Packaged Commodities) Rules, 2011",
         reason:
-          "A name and address were detected, but OCR couldn't confidently determine whether this is the manufacturer, packer, or importer — this affects which declaration is actually required. Check the label wording directly.",
+          "A name and address were detected, but OCR could not verify whether this entity is manufacturer, packer, or importer. Check label wording directly.",
       },
       {
-        id: "batch-lot",
-        label: "Batch / lot number",
+        id: "batch_lot",
+        label: "Batch / Lot number",
         status: "detected",
         reading: "SR24B0417",
-        ruleRef: "LM(PC) Rules 2011, r.6(1)(j)",
+        ruleRef: "Rule 6(1)(b) — Legal Metrology (Packaged Commodities) Rules, 2011",
         reason: null,
       },
       {
-        id: "mfg-date",
-        label: "Date-related declaration",
+        id: "mfg_date",
+        label: "Date of manufacture / packaging",
         status: "detected",
-        reading: "MFD 03/2026",
-        ruleRef: "LM(PC) Rules 2011, r.6(1)(h)",
+        reading: "03/2026",
+        ruleRef: "Rule 6(1)(d) — Legal Metrology (Packaged Commodities) Rules, 2011",
         reason: null,
       },
       {
-        id: "consumer-care",
-        label: "Consumer care details",
+        id: "best_before",
+        label: "Best Before / Expiry date",
+        status: "detected",
+        reading: "Best before 9 months from mfg",
+        ruleRef: "Rule 6(1)(da) — Legal Metrology (Packaged Commodities) Rules, 2011",
+        reason: null,
+      },
+      {
+        id: "consumer_care",
+        label: "Consumer Care details",
         status: "potential_issue",
         reading: null,
-        ruleRef: "LM(PC) Rules 2011, r.6(1)(k)",
+        ruleRef: "Rule 6(1)(f) — Legal Metrology (Packaged Commodities) Rules, 2011",
         reason:
-          "No phone number, email, or contact address for consumer complaints was located on the scanned face. Check the reverse panel before treating this as missing.",
+          "No phone number, email, or contact address for consumer complaints was located on the scanned face. Check the reverse panel before treating as missing.",
       },
     ],
   };

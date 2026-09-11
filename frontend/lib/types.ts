@@ -21,7 +21,9 @@ export interface ProductInfo {
   mfgDate: string;
   packerAddress: string;
   customerCareText: string | null;
+  bestBefore?: string | null;
 }
+
 
 export interface ScanResult {
   scanId: string;
